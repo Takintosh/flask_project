@@ -1,0 +1,49 @@
+{% extends "layouts/default.html" %}
+
+{% block title %} Activos Fijos {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+            
+        <h4 class="c-grey-900 mT-10 mB-30">Estudiantes &nbsp; <button type="button" class="btn cur-p btn-primary" title="Ingresar Estudiante">+</button></h4>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="bgc-white bd bdrs-3 p-20 mB-20">
+                    <table id="dataTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Matrícula</th>
+                                <th>Proyectos</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Matrícula</th>
+                                <th>Proyectos</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.surname }}</td>
+                                    <td>{{ student.enrollment }}</td>
+                                    <td>#</td>
+                                </tr>
+                            {% endfor %} 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

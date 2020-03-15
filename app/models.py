@@ -8,18 +8,24 @@ from app         import db
 from flask_login import UserMixin
 
 
-# Modelo Usuario
+# Clase Usuario
 class User(UserMixin, db.Model):
 
-    id       = db.Column(db.Integer,     primary_key = True)
-    user     = db.Column(db.String(64),  unique = True)
-    email    = db.Column(db.String(120), unique = True)
+    id      = db.Column(db.Integer,     primary_key = True)
+    user    = db.Column(db.String(64),  unique = True)
+    name    = db.Column(db.String(64),  unique = False)
+    surname = db.Column(db.String(64),  unique = False)
+    email   = db.Column(db.String(120), unique = True)
+    rank    = db.Column(db.String(120), unique = False)
     password = db.Column(db.String(500))
 
     def __init__(self, user, email, password):
         self.user       = user
+        self.name       = name
+        self.surname    = surname
         self.password   = password
         self.email      = email
+        self.rank       = rank
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user)
@@ -29,7 +35,7 @@ class User(UserMixin, db.Model):
         db.session.commit( )
         return self 
 
-# Modelo Insumos
+# Clase Insumos
 class Supply(db.Model):
     id          = db.Column(db.Integer,         primary_key = True)
     name        = db.Column(db.String(64),      unique = True)
@@ -37,23 +43,63 @@ class Supply(db.Model):
     stock       = db.Column(db.Integer)
     supplies    = db.relationship('UsedSupply', backref='fromSupply')
 
-# Modelo Estudiante
+    def __init__(self, name, brand, stock):
+        self.name   = name
+        self.brand  = brand
+        self.stock  = stock
+
+
+# Clase Estudiante
 class Student(db.Model):
     id          = db.Column(db.Integer,         primary_key = True)
     name        = db.Column(db.String(64))
     surname     = db.Column(db.String(64))
     enrollment  = db.Column(db.String(64))
-    projects    = db.relationship('Project',    backref='owner')
+    
+    def __init__(self, name, surname, enrollment):
+        self.name       = name
+        self.surname    = surname
+        self.enrollment = enrollment
 
-# Modelo Proyecto
+# Clase Proyecto
 class Project(db.Model):
     id          = db.Column(db.Integer,         primary_key = True)
     name        = db.Column(db.String(64))
-    student_id  = db.Column(db.Integer,         db.ForeignKey('student.id'))
-    supply_id   = db.relationship('UsedSupply', backref='usingSupply')
+    student_id  = db.Column(db.Integer,         db.ForeignKey('student.id'),    nullable=False)
+    student     = db.relationship("Student", backref="owner", uselist=False, foreign_keys=[student_id])
+
+    user_id     = db.Column(db.Integer,         db.ForeignKey('user.id'),    nullable=False)
+    professor   = db.relationship("User", backref="incharge", uselist=False, foreign_keys=[user_id])
     
-# Modelo Insumo Usado
-class UsedSupply(db.Model):
-    id          = db.Column(db.Integer,     primary_key = True)
-    supply_id   = db.Column(db.Integer,     db.ForeignKey('supply.id'))
-    project_id  = db.Column(db.Integer,     db.ForeignKey('project.id'))
+    supply_id   = db.relationship('UsedSupply', backref='usingSupply')
+
+    def __init__(self, name):
+        self.name       = name
+    
+# Clase Insumo Usado
+class UsedSupply(Supply, db.Model):
+    usedsupply_id   = db.Column(db.Integer,     primary_key = True)
+    supply_id       = db.Column(db.Integer,     db.ForeignKey('supply.id'),     nullable=False)
+    project_id      = db.Column(db.Integer,     db.ForeignKey('project.id'),    nullable=False)
+
+# Clase Sala
+class Room(db.Model):
+    id      = db.Column(db.Integer,         primary_key = True)
+    name    = db.Column(db.String(64))
+
+    def __init__(self, name):
+        self.name   = name
+
+# Clase Activos Fijos
+class FixedAsset(db.Model):
+    id              = db.Column(db.Integer,     primary_key = True)
+    name            = db.Column(db.String(64))
+    status          = db.Column(db.String(64))
+    originroom_id   = db.Column(db.Integer,     db.ForeignKey(Room.id),   nullable=True)
+    actualroom_id   = db.Column(db.Integer,     db.ForeignKey(Room.id),   nullable=True)
+    originroom      = db.relationship("Room", backref="originroom", uselist=False, foreign_keys=[originroom_id])
+    actualroom      = db.relationship("Room", backref="actualroom", uselist=False, foreign_keys=[actualroom_id])
+
+    def __init__(self, name, status):
+        self.name   = name
+        self.status = status
