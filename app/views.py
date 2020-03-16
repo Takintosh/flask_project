@@ -8,14 +8,14 @@ Copyright (c) 2019 - present AppSeed.us
 import os, logging 
 
 # Flask modules
-from flask               import render_template, request, url_for, redirect, send_from_directory
+from flask               import render_template, request, url_for, redirect, send_from_directory, flash
 from flask_login         import login_user, logout_user, current_user, login_required
 from werkzeug.exceptions import HTTPException, NotFound, abort
 
 # App modules
 from app        import app, lm, db, bc
-from app.models import User
-from app.forms  import LoginForm, RegisterForm
+from app.models import User, Supply, FixedAsset, Student, Project, UsedSupply
+from app.forms  import LoginForm, RegisterForm, SupplyForm, UsedSupplyForm
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -133,3 +133,91 @@ def index(path):
         
         return render_template('layouts/auth-default.html',
                                 content=render_template( 'pages/404.html' ) )
+
+# Vista de Insumos
+@app.route('/insumos', methods=['GET', 'POST'])
+def supplies():
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    form        = SupplyForm()
+    usingform   = UsedSupplyForm()
+
+    if request.method == 'POST':
+
+        # Agregar Insumo
+        if form.case.data == "Agregar":
+            if form.validate_on_submit():
+                supply = Supply(name=form.name.data, brand=form.brand.data, stock=form.stock.data)
+                
+                db.session.add(supply)
+                db.session.commit()
+                flash('Insumo creado!', 'success')
+                return redirect(url_for('supplies'))
+
+        # Editar Insumo
+        elif form.case.data == "Editar":
+            if form.validate_on_submit():
+                supply          = Supply.query.filter_by(id=form.id.data).first()
+                supply.name     = form.name.data
+                supply.brand    = form.brand.data
+                supply.stock    = form.stock.data
+                db.session.commit()
+                flash('Insumo editado!', 'success')
+                return redirect(url_for('supplies'))
+
+        # Usar Insumo
+        if usingform.case.data == "Usar":
+            if usingform.validate_on_submit():
+                #return "Project_Id: " + usingform.project_id.data + " | Supply_Id: " + usingform.supply_id.data
+                #return redirect(url_for('users'))
+
+                usedsupply = UsedSupply(project_id=usingform.project_id.data, supply_id=usingform.supply_id.data)
+                db.session.add(usedsupply)
+                db.session.commit()
+                return redirect(url_for('students'))
+                
+                supply          = Supply.query.filter_by(id = usingform.supply_id.data).first()
+                supply.stock    = supply.stock - usingform.quantity.data
+                db.session.commit()
+                
+                flash('Insumo usado!', 'success')
+                return redirect(url_for('assets'))
+
+    # Cargar Vista
+    supplies    = Supply.query.all()
+    return render_template('pages/insumos.html', supplies = supplies, form = form, usingform = usingform)
+
+
+# Vista de Activos Fijos
+@app.route('/activos')
+def assets():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    assets = FixedAsset.query.all()
+    return render_template('pages/activos.html', assets = assets)
+
+# Vista de Usuarios
+@app.route('/usuarios')
+def users():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    users = User.query.all()
+    return render_template('pages/usuarios.html', users = users)
+
+# Vista de Alumnos
+@app.route('/alumnos')
+def students():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    students = Student.query.all()
+    return render_template('pages/estudiantes.html', students = students)
+
+# Vista de Proyectos
+@app.route('/proyectos')
+def projects():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    projects = Project.query.all()
+    return render_template('pages/proyectos.html', projects = projects)

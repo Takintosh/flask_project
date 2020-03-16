@@ -1,0 +1,190 @@
+{% extends "layouts/default.html" %}
+
+{% block title %} Insumos Tecnológicos {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+            
+        <h4 class="c-grey-900 mT-10 mB-30">Insumos Tecnológicos &nbsp;
+            <button type="button" class="btn cur-p btn-primary" title="Ingresar Insumo" data-toggle="modal" data-target="#addsupplyModal">+</button>
+        </h4>
+
+        <div class="modal fade" id="addsupplyModal" tabindex="-1" role="dialog" aria-labelledby="addsupplyModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="">Nuevo Insumo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+
+                    <form name="addsupplyform" id="addsupplyform" method="POST" action="" class="container">
+                        {{ form.csrf_token() }}
+
+                        <div class="modal-body">
+                        
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="validationCustom01">Nombre de Insumo</label>
+                                    {{ form.name(class="form-control", placeholder="Nombre de Insumo", required=required) }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="validationCustom02">Marca</label>
+                                    {{ form.brand(class="form-control", placeholder="Marca", required=required) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom05">Stock</label>
+                                    {{ form.stock(class="form-control", placeholder="Stock", required=required) }}
+                                </div>
+                            </div>
+                        
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            {{ form.case(value="Agregar") }}
+                            {{ form.submit(class="btn btn-primary", value="Guardar") }}
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="bgc-white bd bdrs-3 p-20 mB-20">
+                    <table id="dataTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Marca</th>
+                                <th>Stock</th>
+                                <th>Utilizados</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Marca</th>
+                                <th>Stock</th>
+                                <th>Utilizados</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            {% for supply in supplies %}
+                                <tr>
+                                    <td>{{ supply.name }}</td>
+                                    <td>{{ supply.brand }}</td>
+                                    <td>{{ supply.stock }}</td>
+                                    <td>#</td>
+                                    <td>
+                                        <a href="#" title="Editar Información" data-toggle="modal" data-target="#editsupplyModal{{ supply.id }}">Editar</a>
+
+                                            <div class="modal fade" id="editsupplyModal{{ supply.id }}" tabindex="-1" role="dialog" aria-labelledby="editsupplyModal{{ supply.id }}" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                        <h5 class="modal-title" id="">Editar Insumo</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        </div>
+                                    
+                                                        <form name="editsupplyform" id="editsupplyform"  method="POST" action="" class="container">
+                                                            {{ form.csrf_token() }}
+                                    
+                                                            <div class="modal-body">
+                                                            
+                                                                <div class="row">
+                                                                    <div class="col-md-12 mb-3">
+                                                                        <label for="validationCustom01">Nombre de Insumo</label>
+                                                                        {{ form.name(class="form-control", placeholder="Nombre de Insumo", required=required, value=supply.name) }}
+                                                                    </div>
+                                                                    <div class="col-md-12 mb-3">
+                                                                        <label for="validationCustom02">Marca</label>
+                                                                        {{ form.brand(class="form-control", placeholder="Marca", value=supply.brand, required=required) }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-3 mb-3">
+                                                                        <label for="validationCustom05">Stock</label>
+                                                                        {{ form.stock(class="form-control", placeholder="Stock", value=supply.stock, required=required) }}
+                                                                    </div>
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                                {{ form.id(value=supply.id) }}
+                                                                {{ form.case(value="Editar") }}
+                                                                {{ form.submit(class="btn btn-primary", value="Editar") }}
+                                                            </div>
+                                                        </form>
+                                    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        &nbsp;|&nbsp;
+                                        <a href="#usesupplyModal{{ supply.id }}" title="Usar Insumo" data-toggle="modal" data-target="#">Usar</a>
+
+                                        <div class="modal fade" id="usesupplyModal{{ supply.id }}" tabindex="-1" role="dialog" aria-labelledby="editsupplyModal{{ supply.id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                    <h5 class="modal-title" id="">Usar Insumo: {{ supply.name }}</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    </div>
+                                
+                                                    <form name="editsupplyform" id="editsupplyform"  method="POST" action="" class="container">
+                                                        {{ usingform.csrf_token() }}
+                                
+                                                        <div class="modal-body">
+                                                        
+                                                            <div class="row">
+                                                                <div class="col-md-12 mb-3">
+                                                                    <label for="validationCustom01">Usar en proyecto:</label>
+                                                                    {{ usingform.project_id(class="form-control", required=required) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-3 mb-3">
+                                                                    <label for="validationCustom05">Cantidad</label>
+                                                                    {{ usingform.quantity(class="form-control", placeholder="Cant", required=required) }}
+                                                                </div>
+                                                            </div>
+                                                        
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                            {{ usingform.supply_id(value=supply.id) }}
+                                                            {{ usingform.case(value="Usar") }}
+                                                            {{ usingform.submit(class="btn btn-primary", value="Usar") }}
+                                                        </div>
+                                                    </form>
+                                
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            {% endfor %} 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

@@ -77,8 +77,8 @@ class Project(db.Model):
         self.name       = name
     
 # Clase Insumo Usado
-class UsedSupply(Supply, db.Model):
-    usedsupply_id   = db.Column(db.Integer,     primary_key = True)
+class UsedSupply(db.Model):
+    id              = db.Column(db.Integer,     primary_key = True)
     supply_id       = db.Column(db.Integer,     db.ForeignKey('supply.id'),     nullable=False)
     project_id      = db.Column(db.Integer,     db.ForeignKey('project.id'),    nullable=False)
 
