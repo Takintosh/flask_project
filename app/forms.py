@@ -8,9 +8,6 @@ from flask_wtf          import FlaskForm
 from flask_wtf.file     import FileField, FileRequired
 from wtforms            import StringField, TextAreaField, SubmitField, PasswordField, IntegerField, HiddenField, SelectField
 from wtforms.validators import InputRequired, Email, DataRequired, Length, EqualTo, ValidationError
-from app.models 		import Project
-
-projects = Project.query.all()
 
 class LoginForm(FlaskForm):
 	username    = StringField  (u'Username'        , validators=[DataRequired()])
@@ -31,10 +28,9 @@ class SupplyForm(FlaskForm):
 	case 	= HiddenField	('Case',	validators=[DataRequired()])
 
 class UsedSupplyForm(FlaskForm):
-	supply_id	= HiddenField	('Supply_Id',	validators=[DataRequired()])
-	#project_id	= IntegerField	('Project_Id',	validators=[DataRequired()])
-	project_id	= SelectField	(choices = [(project.id, project.name) 	for project in projects],	validators=[DataRequired()])
-	quantity	= IntegerField	('Quantity', 	validators=[DataRequired()])
-	case 		= HiddenField	('Case',		validators=[DataRequired()])
+	supply_id	= HiddenField	('Supply_Id',					validators=[DataRequired()])
+	project_id	= SelectField	('Project_Id',	coerce=int, 	validators=[DataRequired()])
+	quantity	= IntegerField	('Quantity',					validators=[DataRequired()])
+	case 		= HiddenField	('Case',						validators=[DataRequired()])
 	submit		= SubmitField	('Submit')
 		

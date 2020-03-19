@@ -84,9 +84,9 @@
                                     <td>{{ supply.name }}</td>
                                     <td>{{ supply.brand }}</td>
                                     <td>{{ supply.stock }}</td>
-                                    <td>#</td>
+                                    <td>{{ supply.usedsupplies.__len__() }}</td>
                                     <td>
-                                        <a href="#" title="Editar Información" data-toggle="modal" data-target="#editsupplyModal{{ supply.id }}">Editar</a>
+                                        <a href="#" title="Editar Información" data-toggle="modal" data-target="#editsupplyModal{{ supply.id }}"><i class="c-light-blue-500 ti-pencil-alt"></i></a>
 
                                             <div class="modal fade" id="editsupplyModal{{ supply.id }}" tabindex="-1" role="dialog" aria-labelledby="editsupplyModal{{ supply.id }}" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
@@ -134,7 +134,7 @@
                                             </div>
                                             
                                         &nbsp;|&nbsp;
-                                        <a href="#usesupplyModal{{ supply.id }}" title="Usar Insumo" data-toggle="modal" data-target="#">Usar</a>
+                                        <a href="#usesupplyModal{{ supply.id }}" title="Usar Insumo" data-toggle="modal" data-target="#"><i class="c-green-500 ti-hand-open"></i></a>
 
                                         <div class="modal fade" id="usesupplyModal{{ supply.id }}" tabindex="-1" role="dialog" aria-labelledby="editsupplyModal{{ supply.id }}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">

@@ -41,7 +41,7 @@ class Supply(db.Model):
     name        = db.Column(db.String(64),      unique = True)
     brand       = db.Column(db.String(64))
     stock       = db.Column(db.Integer)
-    supplies    = db.relationship('UsedSupply', backref='fromSupply')
+    usedsupplies    = db.relationship("UsedSupply", backref="supply")
 
     def __init__(self, name, brand, stock):
         self.name   = name
@@ -66,10 +66,10 @@ class Project(db.Model):
     id          = db.Column(db.Integer,         primary_key = True)
     name        = db.Column(db.String(64))
     student_id  = db.Column(db.Integer,         db.ForeignKey('student.id'),    nullable=False)
-    student     = db.relationship("Student", backref="owner", uselist=False, foreign_keys=[student_id])
+    student     = db.relationship("Student",    backref="owner", uselist=False, foreign_keys=[student_id])
 
-    user_id     = db.Column(db.Integer,         db.ForeignKey('user.id'),    nullable=False)
-    professor   = db.relationship("User", backref="incharge", uselist=False, foreign_keys=[user_id])
+    user_id     = db.Column(db.Integer,         db.ForeignKey('user.id'),       nullable=False)
+    professor   = db.relationship("User",       backref="incharge", uselist=False,  foreign_keys=[user_id])
     
     supply_id   = db.relationship('UsedSupply', backref='usingSupply')
 
@@ -81,6 +81,7 @@ class UsedSupply(db.Model):
     id              = db.Column(db.Integer,     primary_key = True)
     supply_id       = db.Column(db.Integer,     db.ForeignKey('supply.id'),     nullable=False)
     project_id      = db.Column(db.Integer,     db.ForeignKey('project.id'),    nullable=False)
+    authorized      = db.Column(db.Integer,     db.ForeignKey('user.id'),       nullable=False)
 
 # Clase Sala
 class Room(db.Model):

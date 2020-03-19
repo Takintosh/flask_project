@@ -141,8 +141,11 @@ def supplies():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    form        = SupplyForm()
-    usingform   = UsedSupplyForm()
+    projects = Project.query.all()
+
+    form                            = SupplyForm()
+    usingform                       = UsedSupplyForm()
+    usingform.project_id.choices    = [(project.id, project.name) 	for project in projects]
 
     if request.method == 'POST':
 
@@ -170,20 +173,19 @@ def supplies():
         # Usar Insumo
         if usingform.case.data == "Usar":
             if usingform.validate_on_submit():
-                #return "Project_Id: " + usingform.project_id.data + " | Supply_Id: " + usingform.supply_id.data
-                #return redirect(url_for('users'))
 
-                usedsupply = UsedSupply(project_id=usingform.project_id.data, supply_id=usingform.supply_id.data)
-                db.session.add(usedsupply)
-                db.session.commit()
-                return redirect(url_for('students'))
+                quant = usingform.quantity.data
+                for used in range(quant):
+                    usedsupply = UsedSupply(project_id=usingform.project_id.data, supply_id=usingform.supply_id.data, authorized=current_user.id)
+                    db.session.add(usedsupply)
+                    db.session.commit()
                 
                 supply          = Supply.query.filter_by(id = usingform.supply_id.data).first()
                 supply.stock    = supply.stock - usingform.quantity.data
                 db.session.commit()
                 
                 flash('Insumo usado!', 'success')
-                return redirect(url_for('assets'))
+                return redirect(url_for('supplies'))
 
     # Cargar Vista
     supplies    = Supply.query.all()
